@@ -1,0 +1,4 @@
+.gitignore
+: foreach *.asm |> nasm -f elf64 -o %B.o %f |> %B.o
+: foreach *.o |> ld -n -o %B %f; strip -s %B |> %B
+: foreach *.elf |> nasm -f bin -o %o %f; chmod +x %o |> %B

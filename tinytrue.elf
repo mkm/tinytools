@@ -1,0 +1,56 @@
+[BITS 64]
+[ORG 0]
+
+base equ 0x400000
+
+header:
+    db 0x7F, "ELF" ; magic
+    db 2 ; 64-bit format
+    db 1 ; little endian
+    db 1 ; version
+    db 0 ; sysv
+    dq 0 ; reserved
+    dw 2 ; executable
+    dw 0x3E ; x86-64
+    dd 1 ; version
+    dq base + text ; entry point
+    dq ph_table ; start of program header table
+    dq 0 ; start of section header table
+    dd 0 ; flags
+    dw header_end - header ; header size
+    dw 0x38 ; program entry size
+    dw 2 ; program entry count
+    dw 0 ; section header size
+    dw 0 ; section header count
+    dw 0 ; section names entry
+header_end:
+
+ph_table:
+    dd 1 ; loadable segment
+    dd 0b101 ; read/exec
+    dq 0 ; file offset
+    dq base ; memory offset
+    dq base ; physical offset
+    dq filesize ; file size
+    dq filesize ; memory size
+    dq 0 ; alignment
+
+    dd 1 ; loadable segment
+    dd 0b110 ; read/write
+    dq 0 ; file offset
+    dq 0x500000 ; memory offset
+    dq 0x500000 ; physical offset
+    dq 0 ; file size
+    dq 0x1000 ; memory size
+    dq 0x1000 ; alignment
+
+sh_table:
+
+text:
+    mov rax, 60
+    xor edi, edi
+    syscall
+
+text_end:
+
+filesize equ $ - $$
